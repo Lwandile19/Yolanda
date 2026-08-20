@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>For Yoda 💜</title>
+  <style>
+    /* --- reset & base --- */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #0d0715;
+      color: #f7f1ff;
+      overflow: hidden;
+    }
+
+    body {
+      background:
+        radial-gradient(circle at 20% 20%, rgba(143, 92, 255, .18), transparent 28%),
+        radial-gradient(circle at 80% 80%, rgba(255, 143, 206, .12), transparent 30%),
+        #0d0715;
+    }
+
+    /* --- app layout --- */
+    .app {
+      width: min(720px, 92vw);
+      height: 100vh;
+      margin: auto;
+      padding: 24px 0 24px;
+      position: relative;
+      overflow: hidden;
+      perspective: 1400px;
+    }
+
+    /* --- top bar --- */
+    .top {
+      height: 38px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: relative;
+      z-index: 100;
+    }
+
+    .brand {
+      font-weight: 800;
+      letter-spacing: .08em;
+      color: #c7a8ff;
+      font-size: .8rem;
+    }
+
+    .progress-container {
+      width: 45%;
+    }
+
+    .progress {
+      height: 6px;
+      background: #2a2037;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .bar {
+      height: 100%;
+      width: 0;
+      background: linear-gradient(90deg, #8f5cff, #ff8fce);
+      transition: width .5s ease;
+    }
+
+    /* --- page container --- */
+    .page-container {
+      position: relative;
+      height: calc(100vh - 62px);
+      overflow: hidden;
+      transform-style: preserve-3d;
+    }
+
+    /* --- screens --- */
+    .screen {
+      display: none;
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+      overflow: hidden;
+      transform-style: preserve-3d;
+    }
+
+    .screen.active {
+      display: flex;
+      flex-direction: column;
+      animation: pageIn .55s cubic-bezier(.22, .61, .36, 1);
+    }
+
+    .screen.active.from-back {
+      animation: pageInBack .55s cubic-bezier(.22, .61, .36, 1);
+    }
+
+    @keyframes pageInBack {
+      0% {
+        opacity: 0;
+        transform: translateX(-90px) rotateY(12deg) scale(.97);
+      }
+      100% {
+        opacity: 1;
+        transform: translateX(0) rotateY(0) scale(1);
+      }
+    }
+
+    @keyframes pageIn {
+      0% {
+        opacity: 0;
+        transform: translateX(90px) rotateY(-12deg) scale(.97);
+      }
+      100% {
+        opacity: 1;
+        transform: translateX(0) rotateY(0) scale(1);
+      }
+    }
+
+    .screen.flip-out {
+      display: flex;
+      animation: pageOut .35s ease forwards;
+    }
+
+    @keyframes pageOut {
+      0% {
+        opacity: 1;
+        transform: translateX(0) rotateY(0) scale(1);
+      }
+      100% {
+        opacity: 0;
+        transform: translateX(-90px) rotateY(12deg) scale(.97);
+      }
+    }
+
+    .screen.flip-back {
+      display: flex;
+      animation: pageOutBack .35s ease forwards;
+    }
+
+    @keyframes pageOutBack {
+      0% {
+        opacity: 1;
+        transform: translateX(0) rotateY(0) scale(1);
+      }
+      100% {
+        opacity: 0;
+        transform: translateX(90px) rotateY(-12deg) scale(.97);
+      }
+    }
+
+    /* --- content --- */
+    .page-content {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .hero {
+      text-align: left;
+    }
+
+    .eyebrow {
+      color: #ff8fce;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      font-size: .75rem;
+    }
+
+    h1 {
+      font-size: clamp(2.7rem, 9vw, 5rem);
+      line-height: .95;
+      margin: 12px 0 20px;
+    }
+
+    h2 {
+      font-size: clamp(1.9rem, 7vw, 3.2rem);
+      line-height: 1.05;
+      margin: 8px 0 14px;
+    }
+
+    h3 {
+      margin: 0 0 10px;
+    }
+
+    p {
+      font-size: 1rem;
+      line-height: 1.6;
+      color: #bdb0cc;
+      margin: 10px 0;
+    }
+
+    .card {
+      background: rgba(23, 16, 37, .9);
+      border: 1px solid #302447;
+      border-radius: 24px;
+      padding: 22px;
+      margin: 15px 0;
+      box-shadow: 0 18px 50px rgba(0, 0, 0, .25);
+    }
+
+    .btn {
+      border: 0;
+      border-radius: 14px;
+      padding: 13px 18px;
+      margin: 6px 5px 6px 0;
+      background: linear-gradient(135deg, #8f5cff, #6e42d6);
+      color: white;
+      font-weight: 800;
+      cursor: pointer;
+      transition: transform .2s, filter .2s;
+      font-size: .95rem;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      filter: brightness(1.08);
+    }
+
+    .btn.secondary {
+      background: #251a36;
+      border: 1px solid #49375f;
+    }
+
+    .btn:disabled {
+      opacity: .5;
+      cursor: default;
+      transform: none;
+    }
+
+    .page-navigation {
+      height: 55px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+    }
+
+    .back-btn {
+      background: transparent;
+      border: 0;
+      color: #8f829f;
+      font-weight: 700;
+      cursor: pointer;
+      padding: 10px;
+      visibility: hidden;
+    }
+
+    .back-btn.visible {
+      visibility: visible;
+    }
+
+    .next-area {
+      margin-left: auto;
+    }
+
+    /* --- choices --- */
+    .choices {
+      display: grid;
+      gap: 9px;
+      margin-top: 15px;
+    }
+
+    .choice {
+      width: 100%;
+      text-align: left;
+      background: #211832;
+      border: 1px solid #403053;
+      color: #f7f1ff;
+      padding: 13px;
+      border-radius: 14px;
+      cursor: pointer;
+      font-size: .95rem;
+      transition: .2s;
+    }
+
+    .choice:hover:not(:disabled) {
+      border-color: #c7a8ff;
+      background: #2a1e3e;
+      transform: translateY(-1px);
+    }
+
+    .choice.correct {
+      border-color: #9df3c1;
+      background: rgba(157, 243, 193, .15);
+      color: #9df3c1;
+      box-shadow: 0 0 18px rgba(157, 243, 193, .12);
+    }
+
+    .choice.wrong {
+      border-color: #ff8585;
+      background: rgba(255, 133, 133, .12);
+      color: #ff8585;
+      animation: shake .25s;
+    }
+
+    .choice.wrong:hover {
+      border-color: #ff8585;
+      background: rgba(255, 133, 133, .18);
+    }
+
+    @keyframes shake {
+      25% {
+        transform: translateX(-5px);
+      }
+      75% {
+        transform: translateX(5px);
+      }
+    }
+
+    .choice:disabled {
+      cursor: default;
+    }
+
+    .feedback {
+      min-height: 25px;
+      margin-top: 10px;
+      font-weight: 700;
+      font-size: .9rem;
+    }
+
+    .feedback.good {
+      color: #9df3c1;
+    }
+
+    .feedback.bad {
+      color: #ff8585;
+    }
+
+    .correct-popup,
+    .wrong-popup {
+      padding: 10px 13px;
+      border-radius: 12px;
+      animation: popupIn .3s ease;
+    }
+
+    .correct-popup {
+      background: rgba(157, 243, 193, .08);
+      border: 1px solid rgba(157, 243, 193, .3);
+      color: #9df3c1;
+    }
+
+    .wrong-popup {
+      background: rgba(255, 133, 133, .08);
+      border: 1px solid rgba(255, 133, 133, .25);
+      color: #ff8585;
+    }
+
+    @keyframes popupIn {
+      from {
+        opacity: 0;
+        transform: translateY(6px) scale(.98);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    /* --- video cards --- */
+    .video-card {
+      background: rgba(23, 16, 37, .9);
+      border: 1px solid #302447;
+      border-radius: 22px;
+      padding: 18px;
+      margin: 12px 0;
+    }
+
+    .chapter {
+      display: inline-block;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: #24183a;
+      color: #c7a8ff;
+      font-size: .75rem;
+      font-weight: 800;
+      letter-spacing: .05em;
+    }
+
+    .video-card h3 {
+      margin-top: 10px;
+      color: #c7a8ff;
+    }
+
+    .video-intro {
+      font-size: .9rem;
+    }
+
+    video {
+      width: 100%;
+      max-height: 43vh;
+      display: block;
+      margin-top: 12px;
+      border-radius: 15px;
+      background: #050308;
+      border: 1px solid #3d2c51;
+      object-fit: contain;
+    }
+
+    .personal-video video {
+      max-height: 35vh;
+    }
+
+    .message {
+      max-height: 31vh;
+      overflow: hidden;
+      mask-image: linear-gradient(to bottom, black 90%, transparent 100%);
+    }
+
+    .message p {
+      font-size: .9rem;
+      line-height: 1.45;
+    }
+
+    .reveal {
+      text-align: center;
+    }
+
+    .heart {
+      font-size: 3.7rem;
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      50% {
+        transform: scale(1.1);
+      }
+    }
+
+    .final {
+      font-size: clamp(2.1rem, 8vw, 4.2rem);
+      line-height: 1.05;
+    }
+
+    .final-question {
+      text-align: center;
+      padding: 20px 15px;
+    }
+
+    .final-question h2 {
+      font-size: clamp(1.8rem, 7vw, 3rem);
+    }
+
+    .section-intro {
+      text-align: center;
+    }
+
+    .section-intro .heart {
+      margin-bottom: 10px;
+    }
+
+    .small {
+      font-size: .8rem;
+      color: #8f829f;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    @media(max-width: 520px) {
+      .app {
+        width: 92vw;
+        padding-top: 18px;
+      }
+      .card {
+        padding: 18px;
+      }
+      .page-content {
+        justify-content: center;
+      }
+      .choice {
+        padding: 12px;
+      }
+      video {
+        max-height: 36vh;
+      }
+      .message {
+        max-height: 28vh;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+
+    <!-- top bar -->
+    <div class="top">
+      <div class="brand">YODA.EXE 💜</div>
+      <div class="progress-container">
+        <div class="progress">
+          <div class="bar" id="bar"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- pages -->
+    <div class="page-container">
+
+      <!-- PAGE 0 — INTRO -->
+      <section class="screen active" data-page="0">
+        <div class="page-content hero">
+          <div class="eyebrow">A long awaited project</div>
+          <h1>Hey, Yoda.</h1>
+          <p>I made you something. Please don't forget to breathe...</p>
+          <div class="card">
+            <p><b>WARNING:</b> This experience contains large amounts of affection, cringe, and very necessesary Yolwanda lore.</p>
+            <button class="btn" onclick="go(1)">START →</button>
+            <button class="btn secondary" onclick="alert('Please trust me my love')">I'm not so sure hey</button>
+          </div>
+        </div>
+        <div class="page-navigation">
+          <button class="back-btn">← BACK</button>
+        </div>
+      </section>
+
+      <!-- PAGE 1 — QUESTION 1 (fixed) -->
+      <section class="screen" data-page="1">
+        <div class="page-content">
+          <div class="eyebrow">Section 1 • Us</div>
+          <h2>Let's see what you remember.</h2>
+          <p>A few timeline questions about us. No pressure👀</p>
+          <div class="card">
+            <h3>When did we start talking?</h3>
+            <div class="choices">
+              <button class="choice" onclick="answer(this,false,'Hmmmm. Try again, Baby.')">17 July</button>
+              <!-- ✅ fixed: correct answer is 28 July -->
+              <button class="choice" onclick="answer(this,true,'Correct. 28 July 2026. And look how far we\'ve come since then. 💜')">28 July</button>
+              <button class="choice" onclick="answer(this,false,'Hmmm. Think Spiderman 🕸️🕷️🕸️')">1 August</button>
+              <button class="choice" onclick="answer(this,false,'Lowkey yeah, but wrong answer')">We spawned into each other's lives</button>
+            </div>
+            <div class="feedback"></div>
+          </div>
+        </div>
+        <div class="page-navigation">
+          <button class="back-btn" onclick="go(0)">← BACK</button>
+          <div class="next-area">
+            <button class="btn next hidden">NEXT →</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- PAGE 2 — QUESTION 2 -->
+      <section class="screen" data-page="2">
+        <div class="page-content">
+          <div class="eyebrow">Section 1 • Us</div>
+          <h2>Our story.</h2>
+          <div class="card">
+            <h3>Our first meetup was...</h3>
+            <div class="choices">
+              <button class="choice" onclick="answer(this,false,'It was soon but not thaaaat soon')">30 July</button>
+              <button class="choice" onclick="answer(this,true,'2 August. A magical day. ✨')">2 August</button>
+              <button class="choice" onclick="answer(this,false,'Close but no.')">5 August</button>
+              <button class="choice" onclick="answer(this,false,'Can you imagine??👀')">It hasn't happened yet</button>
+            </div>
+            <div class="feedback"></div>
+          </div>
+        </div>
+        <div class="page-navigation">
+          <button class="back-btn" onclick="go(1)">← BACK</button>
+          <div class="next-area">
+            <button class="btn next hidden">NEXT →</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- PAGE 3 — QUESTION 3 -->
+      <section class="screen" data-page="3">
+        <div class="page-content">
+          <div class="eyebrow">Section 1 • Us</div>
+          <h2>The part where it got deep.</h2>
+          <div class="card">
+            <h3>When did we become exclusive?</h3>
+            <div class="choices">
+              <button class="choice" onclick="answer(this,false,'Close, but no. 😭')">3 August</button>
+              <button class="choice" onclick="answer(this,true,'8 August 2026. The day “Yolwanda” took a step into becoming official. ❤️')">8 August</button>
+              <button class="choice" onclick="answer(this,false,'Not my birthday👀')">11 August</button>
+              <button class="choice" onclick="answer(this,false,'Suuuuure😉😉')">Yet to be unlocked...</button>
+            </div>
+            <div class="feedback"></div>
+          </div>
+        </div>
+        <div class="page-navigation">
+          <button class="back-btn" onclick="go(2)">← BACK</button>
+          <div class="next-area">
+            <button class="btn next hidden">NEXT →</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- PAGE 4 — QUESTION 4 -->
+      <section class="screen" data-page="4">
+        <div class="page-content">
+          <div class="eyebrow">Section 1 • Her</div>
+          <h2>Extremely important Yoda research.</h2>
+          <div class="card">
+            <h3>Which combination could realistically occupy Yoda for an entire day?</h3>
+            <div class="choices">
+              <button class="choice" onclick="answer(this,false,'Respectfully... no. 😂')">Sitting quietly doing absolutely nothing</button>
+              <button class="choice" onclick="answer(this,true,'Correct. Add being on a call and we have a full schedule. 👀😂')">Crocheting + Anime + Ariana Grande</button>
+              <button class="choice" onclick="answer(this,false,'Not yet, but one day... ')">In a one-on-on consultation</button>
+              <button class="choice" onclick="answer(this,false,'Wrong cinematic universe. 💀')">Becoming a professional footballer</button>
+            </div>
+            <div class="feedback"></div>
+          </div>
+        </div>
+        <div class="page-navigation">
+          <button class="back-btn" onclick="go(3)">← BACK</button>
+          <div class="next-area">
+            <button class="btn next hidden">NEXT →</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- PAGE 5 — QUESTION 5 -->
+      <section class="screen" data-page="5">
+        <div class="page-content">
+          <div class="eyebrow">Section 1 • The little things</div>
+          <h2>You stole something from me.</h2>
+          <div class="card">
+            <h3>What did Yoda intentionally steal from Lwandile?</h3>
+            <div class="choices">
+              <button class="choice" onclick="answer(this,false,'Thankfully, not yet 😭🙏')">Her hoodies</button>
+              <button class="choice" onclick="answer(this,true,'Correct. ATP, you\'ve made it your own. 😂')">Her “yeahh, yeahhh, yeahhhh”</button>
+              <button class="choice" onclick="answer(this,false,'Not yet. 😂')">Her entire personality</button>
+              <button class="choice" onclick="answer(this,false,'Valid answer but not quite...')">Her whole heart</button>
+            </div>
+            <div class="feedback"></div>
+          </div>
+        </div>
+        <div class="page-navigation">
+          <button class="back-btn" onclick="go(4)">← BACK</button>
+          <div class="next-area">
+            <button class="btn next hidden">NEXT →</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- PAGE 6 — QUESTION 6 -->
+      <section class="screen" data-page="6">
+        <div class="page-content">
+          <div class="eyebrow">Section 1 • One more</div>
+          <h2>This part makes you cool.</h2>
+          <div class="card">
+            <p class="bigline">What happens when Lwandile gets corny?</p>
+            <div class="choices">
+              <button class="choice" onclick="answer(this,false,'You would never. 😭💀')">She immediately blocks her</button>
+              <button class="choice" onclick="answer(this,false,'Absolutely not. 😂')">She reports her to the authorities</button>
+              <button class="choice" onclick="answer(this,true,'Exactly. You let me be cringe, weird and corny. You let me embrace being myself. ❤️')">She lets her be cringe and encourages it</button>
+              <button class="choice" onclick="answer(this,false,'That would be sad ngl. 💀')">She pretends to not know her</button>
+            </div>
+            <div class="feedback"></div>
+          </div>
+        </div>
+        <div class="page-navigation">
+          <button class="back-btn" onclick="go(5)">← BACK</button>
+          <div class="next-area">
+            <button class="btn next hidden">NEXT →</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- PAGE 7 — SECTION 1 COMPLETE -->
+      <section class="screen" data-page="7">
+        <div class="page-content section-intro">
+          <div class="heart">💜</div>
+          <div class="eyebrow">Section 1 complete</div>
+          <h2>You survived.</h2>
+          <p>But now we're getting to the people who know and love you.</p>
+          <button class="btn" onclick="go(8)">SECTION 2 →</button>
+        </div>
+        <div class="page-navigation">
+          <button class="back-btn" onclick="go(6)">← BACK</button>
+        </div>
+      </section>
+
+      <!-- PAGE 8 — SECTION 2 INTRO -->
+      <section class="screen" data-page="8">
+        <div class="page-content section-intro">
+          <div class="eyebrow">Section 2 • Their side</div>
+          <div class="heart">👀</div>
+          <h2>What do they see?</h2>
+          <div class="card">
+            <p>Three questions. Three perspectives. Three little reminders of the person you are.</p>
+            <p>Take your time with these.</p>
+            <button class="btn" onclick="go(9)">START →</button>
+          </div>
+        </div>
+        <div class="page-navigation">
+          <button class="back-btn" onclick="go(7)">← BACK</button>
+        </div>
+      </section>
+
+      <!-- PAGE 9 — VIDEO 1 -->
+      <section class="screen" data-page="9">
+        <div class="page-content">
+          <div class="eyebrow">Section 2 • Chapter 1</div>
+          <h2>Why you're special.</h2>
+          <div class="video-card">
+            <span class="chapter">VIDEO CHAPTER 1 - Bonga</span>
+            <h3>Why do they think you're so special and lovable?</h3>
+            <p class="video-intro">Someone who loves you wanted to answer this for you.</p>
+            <video controls playsinline preload="metadata">
+              <source src="video/What Makes You, You.mp4" type="video/mp4">
+              Your browser does not support video.
+            </video>
+          </div>
+        </div>
+        <div class="page-navigation">
+          <button class="back-btn" onclick="go(8)">← BACK</button>
+          <div class="next-area">
+            <button class="btn" onclick="go(10)">NEXT →</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- PAGE 10 — VIDEO 2 -->
+      <section class="screen" data-page="10">
+        <div class="page-content">
+          <div class="eyebrow">Section 2 • Chapter 2</div>
+          <h2>What makes you different?</h2>
+          <div class="video-card">
+            <span class="chapter">VIDEO CHAPTER 2 - Roseanne</span>
+            <h3>What makes you different since being in this relationship?</h3>
+            <p class="video-intro">What have they noticed about you, your love, and the way you've changed since this started?</p>
+            <video controls playsinline preload="metadata">
+              <source src="video/The Girl I've Watched You Become.mp4" type="video/mp4">
+              Your browser does not support video.
+            </video>
+          </div>
+        </div>
+        <div class="page-navigation">
+          <button class="back-btn" onclick="go(9)">← BACK</button>
+          <div class="next-area">
+            <button class="btn" onclick="go(11)">NEXT →</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- PAGE 11 — VIDEO 3 -->
+      <section class="screen" data-page="11">
+        <div class="page-content">
+          <div class="eyebrow">Section 2 • Chapter 3</div>
+          <h2>What do they wish for you?</h2>
+          <div class="video-card">
+            <span class="chapter">VIDEO CHAPTER 3</span>
+            <h3>What would they wish for you?</h3>
+            <p class="video-intro">For you as an individual, for your life, or for the love you're building.</p>
+            <video controls playsinline preload="metadata">
+              <source src="video/What Do You Wish For Her.mp4" type="video/mp4">
+              Your browser does not support video.
+            </video>
+          </div>
+        </div>
+        <div class="page-navigation">
+          <button class="back-btn" onclick="go(10)">← BACK</button>
+          <div class="next-area">
+            <button class="btn" onclick="go(12)">FINISH SECTION 2 →</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- PAGE 12 — SECTION 2 COMPLETE -->
+      <section class="screen" data-page="12">
+        <div class="page-content section-intro">
+          <div class="heart">💜</div>
+          <div class="eyebrow">Section 2 complete</div>
+          <h2>Now it's my turn.</h2>
+          <p>You've heard what they see.</p>
+          <p>Now I want to tell you what I see.</p>
+          <button class="btn" onclick="go(13)">MY SECTION →</button>
+        </div>
+        <div class="page-navigation">
+          <button class="back-btn" onclick="go(11)">← BACK</button>
+        </div>
+      </section>
+
+      <!-- PAGE 13 — YOUR SECTION -->
+      <section class="screen" data-page="13">
+        <div class="page-content">
+          <div class="eyebrow">Section 3 • From me</div>
+          <h2>Okay. My turn.</h2>
+          <div class="video-card personal-video">
+            <span class="chapter">MY VIDEO</span>
+            <h3>Everything I wanted to say to you.</h3>
+            <video controls playsinline preload="metadata">
+              <source src="video/my-message.mp4" type="video/mp4">
+              Your browser does not support video.
+            </video>
+          </div>
+        </div>
+        <div class="page-navigation">
+          <button class="back-btn" onclick="go(12)">← BACK</button>
+        </div>
+      </section>
+
+      <!-- PAGE 14 — FINAL QUESTION -->
+      <section class="screen" data-page="14">
+        <div class="page-content reveal">
+          <div class="heart">💜</div>
+          <div class="eyebrow">Final level</div>
+          <h2 class="final">One final question</h2>
+          <div class="card final-question">
+            <h1>Please go back to the call, we're currently on. 🫶</h1>
+          </div>
+        </div>
+        <div class="page-navigation">
+          <button class="back-btn" onclick="go(13)">← BACK</button>
+        </div>
+      </section>
+
+      <!-- PAGE 15 — END -->
+      <section class="screen" data-page="15">
+        <div class="page-content reveal">
+          <div class="heart">💐</div>
+          <div class="eyebrow">End</div>
+          <h2>Okay, Baby. ❤️</h2>
+          <p>We're FINALLY dating!! I can't wait to love you I can't wait to grow with you I'm excited for what the future holds but I know it'll be amazing with you</p>
+          <p class="bigline">Now either go back to the call or go debrief with your homies. 😂🫶</p>
+          <p class="small">— The developer who meant every word.</p>
+        </div>
+        <div class="page-navigation">
+          <button class="back-btn" onclick="go(14)">← BACK</button>
+        </div>
+      </section>
+
+    </div> <!-- end page-container -->
+  </div> <!-- end app -->
+
+  <script>
+    /* ========== PAGE SYSTEM ========== */
+    const screens = [...document.querySelectorAll('.screen')];
+    let current = 0;
+    let isFlipping = false;
+
+    function updateProgress() {
+      const percentage = (current / (screens.length - 1)) * 100;
+      document.getElementById('bar').style.width = percentage + '%';
+    }
+
+    function go(nextPage) {
+      if (isFlipping) return;
+      if (nextPage < 0 || nextPage >= screens.length || nextPage === current) return;
+
+      const oldPage = screens[current];
+      const newPage = screens[nextPage];
+      const goingForward = nextPage > current;
+      isFlipping = true;
+
+      oldPage.querySelectorAll('video').forEach(v => v.pause());
+
+      oldPage.classList.add(goingForward ? 'flip-out' : 'flip-back');
+
+      setTimeout(() => {
+        oldPage.classList.remove('active', 'flip-out', 'flip-back');
+        current = nextPage;
+        newPage.scrollTop = 0;
+        if (!goingForward) newPage.classList.add('from-back');
+        newPage.classList.add('active');
+        updateProgress();
+        setTimeout(() => {
+          newPage.classList.remove('from-back');
+          isFlipping = false;
+        }, 550);
+      }, 350);
+    }
+
+    /* ========== QUESTION ANSWERS ========== */
+    function answer(btn, correct, msg) {
+      const card = btn.closest('.card');
+      const feedback = card.querySelector('.feedback');
+      const choices = card.querySelectorAll('.choice');
+      const screen = btn.closest('.screen');
+      const next = screen.querySelector('.next');
+
+      if (!correct) {
+        btn.classList.add('wrong');
+        feedback.className = 'feedback bad';
+        feedback.innerHTML = `<div class="wrong-popup">❌ ${msg}</div>`;
+        return;
+      }
+
+      btn.classList.add('correct');
+      choices.forEach(choice => choice.disabled = true);
+      feedback.className = 'feedback good';
+      feedback.innerHTML = `<div class="correct-popup">✓ ${msg}</div>`;
+      if (next) next.classList.remove('hidden');
+    }
+
+    /* ========== NEXT BUTTONS ========== */
+    document.querySelectorAll('.next').forEach(btn => {
+      btn.addEventListener('click', () => go(current + 1));
+    });
+
+    /* ========== FINAL ========== */
+    function finale() { go(15); }
+
+    updateProgress();
+  </script>
+</body>
+</html>
